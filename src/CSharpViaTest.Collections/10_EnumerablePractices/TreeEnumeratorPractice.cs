@@ -68,28 +68,44 @@ namespace CSharpViaTest.Collections._10_EnumerablePractices
 
         class TreeNodeEnumerator : IEnumerator<TreeNode>
         {
+            readonly Stack<TreeNode> stack = new Stack<TreeNode>();
+            readonly TreeNode root;
+
+            TreeNode current;
+
             public TreeNodeEnumerator(TreeNode root)
             {
-                throw new NotImplementedException();
+                this.root = root;
+                this.stack.Push(root);
             }
 
             public bool MoveNext()
             {
-                throw new NotImplementedException();
+                if (stack.Count == 0) return false;
+
+                current = stack.Pop();
+
+                foreach (TreeNode child in current.Children) {
+                    stack.Push(child);
+                }
+                return true;
             }
 
             public void Reset()
             {
-                throw new NotImplementedException();
+                current = null;
+                stack.Clear();
+                stack.Push(root);
             }
 
-            public TreeNode Current { get; }
+            public TreeNode Current => current;
 
             object IEnumerator.Current => Current;
 
             public void Dispose()
             {
-                throw new NotImplementedException();
+                current = null;
+                stack.Clear();
             }
         }
 
