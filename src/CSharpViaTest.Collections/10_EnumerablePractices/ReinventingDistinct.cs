@@ -35,7 +35,7 @@ namespace CSharpViaTest.Collections._10_EnumerablePractices
 
             public DistinctEnumerable(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
             {
-                this.source = source;
+                this.source = source ?? throw new ArgumentNullException();
                 this.comparer = comparer;
             }
 
@@ -65,28 +65,40 @@ namespace CSharpViaTest.Collections._10_EnumerablePractices
 
         class DistinctEnumerator<TSource> : IEnumerator<TSource>
         {
+            readonly IEnumerator<TSource> enumerator;
+            readonly HashSet<TSource> stock;
+
             public DistinctEnumerator(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
             {
-                throw new NotImplementedException();
+                this.enumerator = source.GetEnumerator();
+                this.stock = comparer == null ? new HashSet<TSource>() : new HashSet<TSource>(comparer);
             }
 
             public bool MoveNext()
             {
-                throw new NotImplementedException();
+                while (enumerator.MoveNext())
+                {
+                    if (stock.Contains(enumerator.Current)) continue;
+
+                    stock.Add(enumerator.Current);
+
+                    return true;
+                }
+                return false;
             }
 
             public void Reset()
             {
-                throw new NotImplementedException();
+                enumerator.Reset();
             }
 
-            public TSource Current { get { throw new NotImplementedException(); } }
+            public TSource Current => enumerator.Current;
 
             object IEnumerator.Current => Current;
 
             public void Dispose()
             {
-                throw new NotImplementedException();
+                enumerator.Dispose();
             }
         }
 
