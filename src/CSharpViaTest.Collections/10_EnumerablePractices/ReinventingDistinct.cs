@@ -35,7 +35,7 @@ namespace CSharpViaTest.Collections._10_EnumerablePractices
 
             public DistinctEnumerable(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
             {
-                this.source = source ?? throw new ArgumentNullException();
+                this.source = source;
                 this.comparer = comparer;
             }
 
