@@ -71,18 +71,14 @@ namespace CSharpViaTest.Collections._10_EnumerablePractices
             public DistinctEnumerator(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
             {
                 this.enumerator = source.GetEnumerator();
-                this.stock = comparer == null ? new HashSet<TSource>() : new HashSet<TSource>(comparer);
+                this.stock = new HashSet<TSource>(comparer ?? EqualityComparer<TSource>.Default);
             }
 
             public bool MoveNext()
             {
                 while (enumerator.MoveNext())
                 {
-                    if (stock.Contains(enumerator.Current)) continue;
-
-                    stock.Add(enumerator.Current);
-
-                    return true;
+                    if (stock.Add(enumerator.Current)) return true;
                 }
                 return false;
             }
