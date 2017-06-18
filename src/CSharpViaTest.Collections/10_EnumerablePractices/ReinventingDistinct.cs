@@ -66,19 +66,19 @@ namespace CSharpViaTest.Collections._10_EnumerablePractices
         class DistinctEnumerator<TSource> : IEnumerator<TSource>
         {
             readonly IEnumerator<TSource> enumerator;
-            readonly HashSet<TSource> stock;
+            readonly HashSet<TSource> exists;
 
             public DistinctEnumerator(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
             {
                 this.enumerator = source.GetEnumerator();
-                this.stock = new HashSet<TSource>(comparer ?? EqualityComparer<TSource>.Default);
+                this.exists = new HashSet<TSource>(comparer ?? EqualityComparer<TSource>.Default);
             }
 
             public bool MoveNext()
             {
                 while (enumerator.MoveNext())
                 {
-                    if (stock.Add(enumerator.Current)) return true;
+                    if (exists.Add(enumerator.Current)) return true;
                 }
                 return false;
             }
@@ -86,6 +86,7 @@ namespace CSharpViaTest.Collections._10_EnumerablePractices
             public void Reset()
             {
                 enumerator.Reset();
+                exists.Clear();
             }
 
             public TSource Current => enumerator.Current;
