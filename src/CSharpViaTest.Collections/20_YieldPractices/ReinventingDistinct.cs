@@ -37,7 +37,11 @@ namespace CSharpViaTest.Collections._20_YieldPractices
         public static IEnumerable<TSource> MyDistinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
+            return MyIterator(source, comparer);
+        }
 
+        static IEnumerable<TSource> MyIterator<TSource>(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
+        {
             HashSet<TSource> exists = new HashSet<TSource>(comparer ?? EqualityComparer<TSource>.Default);
 
             foreach (TSource item in source)
