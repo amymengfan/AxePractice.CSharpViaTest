@@ -36,7 +36,14 @@ namespace CSharpViaTest.Collections._20_YieldPractices
 
         public static IEnumerable<TSource> MyDistinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
         {
-            throw new NotImplementedException();
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            HashSet<TSource> exists = new HashSet<TSource>(comparer ?? EqualityComparer<TSource>.Default);
+
+            foreach (TSource item in source)
+            {
+                if (exists.Add(item)) yield return item;
+            }
         }
 
         #endregion
