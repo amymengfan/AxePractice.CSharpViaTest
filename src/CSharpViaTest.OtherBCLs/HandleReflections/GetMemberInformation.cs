@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Linq;
 using Xunit;
 
 namespace CSharpViaTest.OtherBCLs.HandleReflections
@@ -59,7 +61,51 @@ namespace CSharpViaTest.OtherBCLs.HandleReflections
 
         static IEnumerable<string> GetInstanceMemberInformation(Type type)
         {
-            throw new NotImplementedException();
+            return new[] {$"Member information for {type.FullName}"}
+                .Concat(GetConstructors(type))
+                .Concat(GetProperties(type))
+                .Concat(GetMethods(type));
+        }
+
+        static IEnumerable<string> GetMethods(Type type)
+        {
+            return type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+                .Where(e => !e.IsSpecialName)
+                .Select(e => $"Public method {e.Name}: {GetParameters(e.GetParameters())}");
+        }
+
+        static IEnumerable<string> GetProperties(Type type)
+        {
+            return type.GetProperties()
+                .OrderBy(e => !e.GetIndexParameters().Any())
+                .Select(e => $"{GetPropertyType(e)} property {e.Name}: {GetGetter(e)}.");
+        }
+
+        static IEnumerable<string> GetConstructors(Type type)
+        {
+            return type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .OrderBy(e => e.IsPublic)
+                .Select(e => $"{GetMethodAccess(e)} constructor: {GetParameters(e.GetParameters())}");
+        }
+
+        static string GetGetter(PropertyInfo property)
+        {
+            return property.GetGetMethod() != null ? "Public getter" : "";
+        }
+
+        static string GetPropertyType(PropertyInfo property)
+        {
+            return property.GetIndexParameters().Any() ? "Indexed" : "Normal";
+        }
+
+        static string GetParameters(ParameterInfo[] parameters)
+        {
+            return parameters.Any() ? parameters.Select(e => $"{e.ParameterType.Name} {e.Name}").Aggregate((e1, e2) => $"{e1}, {e2}") : "no parameter";
+        }
+
+        static string GetMethodAccess(MethodBase method)
+        {
+            return method.IsPublic ? "Public" : "Non-public";
         }
 
         #endregion
