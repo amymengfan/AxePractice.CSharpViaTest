@@ -45,7 +45,9 @@ namespace CSharpViaTest.OtherBCLs.HandleReflections
 
         static ReflectionSample InvokeConstructor(string type, params object[] arguments)
         {
-            throw new NotImplementedException();
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            return (ReflectionSample) Activator.CreateInstance(Type.GetType(type), arguments);
         }
 
         #endregion
